@@ -1,113 +1,126 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+import React, { useEffect } from 'react';
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+const Page = () => {
+    useEffect(() => {
+        // Initialize selectedPiece to keep track of the currently selected chess piece
+        let selectedPiece: HTMLElement | null = null;
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+        // Add click event listeners to all elements with class 'piece'
+        document.querySelectorAll('.piece').forEach(piece => {
+            piece.addEventListener('click', () => {
+                // If there's already a selected piece, remove its 'selected' class
+                if (selectedPiece) {
+                    selectedPiece.classList.remove('selected');
+                }
+                // Update selectedPiece to the clicked piece and add 'selected' class
+                selectedPiece = piece as HTMLElement;
+                selectedPiece.classList.add('selected');
+            });
+        });
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+        // Add click event listeners to all elements with class 'square'
+        document.querySelectorAll('.square').forEach(square => {
+            square.addEventListener('click', () => {
+                // If there's a selected piece and the square doesn't already contain it
+                if (selectedPiece && !square.contains(selectedPiece)) {
+                    // Append the selected piece to the clicked square
+                    square.appendChild(selectedPiece);
+                    // Remove 'selected' class from the piece and reset selectedPiece to null
+                    selectedPiece.classList.remove('selected');
+                    selectedPiece = null;
+                }
+            });
+        });
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+        // Cleanup event listeners on component unmount
+        return () => {
+            // Remove click event listeners for all elements with class 'piece'
+            document.querySelectorAll('.piece').forEach(piece => {
+                piece.removeEventListener('click', () => {});
+            });
+            // Remove click event listeners for all elements with class 'square'
+            document.querySelectorAll('.square').forEach(square => {
+                square.removeEventListener('click', () => {});
+            });
+        };
+    }, []); // Empty dependency array ensures useEffect runs only once
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+    return (
+        <>
+            <div className="chess-board">
+                {/* Board setup with pieces */}
+                {/* First row (white pieces) */}
+                <div className="square white"><span className="piece">&#9814;</span></div>
+                <div className="square black"><span className="piece">&#9816;</span></div>
+                <div className="square white"><span className="piece">&#9815;</span></div>
+                <div className="square black"><span className="piece">&#9813;</span></div>
+                <div className="square white"><span className="piece">&#9812;</span></div>
+                <div className="square black"><span className="piece">&#9815;</span></div>
+                <div className="square white"><span className="piece">&#9816;</span></div>
+                <div className="square black"><span className="piece">&#9814;</span></div>
+                {/* Second row (white pawns) */}
+                <div id='11' className="square black"><span className="piece">&#9817;</span></div>
+                <div id='12' className="square white"><span className="piece">&#9817;</span></div>
+                <div id='13' className="square black"><span className="piece">&#9817;</span></div>
+                <div id='14' className="square white"><span className="piece">&#9817;</span></div>
+                <div id='15' className="square black"><span className="piece">&#9817;</span></div>
+                <div id='16' className="square white"><span className="piece">&#9817;</span></div>
+                <div id='17' className="square black"><span className="piece">&#9817;</span></div>
+                <div id='18' className="square white"><span className="piece">&#9817;</span></div>
+                {/* Empty rows */}
+                <div className="square white"></div>
+                <div className="square black"></div>
+                <div className="square white"></div>
+                <div className="square black"></div>
+                <div className="square white"></div>
+                <div className="square black"></div>
+                <div className="square white"></div>
+                <div className="square black"></div>
+                <div className="square black"></div>
+                <div className="square white"></div>
+                <div className="square black"></div>
+                <div className="square white"></div>
+                <div className="square black"></div>
+                <div className="square white"></div>
+                <div className="square black"></div>
+                <div className="square white"></div>
+                <div className="square white"></div>
+                <div className="square black"></div>
+                <div className="square white"></div>
+                <div className="square black"></div>
+                <div className="square white"></div>
+                <div className="square black"></div>
+                <div className="square white"></div>
+                <div className="square black"></div>
+                <div className="square black"></div>
+                <div className="square white"></div>
+                <div className="square black"></div>
+                <div className="square white"></div>
+                <div className="square black"></div>
+                <div className="square white"></div>
+                {/* Seventh row (black pawns) */}
+                <div id='1' className="square white"><span className="piece">&#9823;</span></div>
+                <div id='2' className="square black"><span className="piece">&#9823;</span></div>
+                <div id='3' className="square white"><span className="piece">&#9823;</span></div>
+                <div id='4' className="square black"><span className="piece">&#9823;</span></div>
+                <div id='5' className="square white"><span className="piece">&#9823;</span></div>
+                <div id='6' className="square black"><span className="piece">&#9823;</span></div>
+                <div id='7' className="square white"><span className="piece">&#9823;</span></div>
+                <div id='8' className="square black"><span className="piece">&#9823;</span></div>
+                {/* Eighth row (black pieces) */}
+                <div className="square black"><span className="piece">&#9820;</span></div>
+                <div className="square white"><span className="piece">&#9822;</span></div>
+                <div className="square black"><span className="piece">&#9821;</span></div>
+                <div className="square white"><span className="piece">&#9819;</span></div>
+                <div className="square black"><span className="piece">&#9818;</span></div>
+                <div className="square white"><span className="piece">&#9821;</span></div>
+                <div className="square black"><span className="piece">&#9822;</span></div>
+                <div className="square white"><span className="piece">&#9820;</span></div>
+            </div>
+        </>
+    );
 }
+
+export default Page;
