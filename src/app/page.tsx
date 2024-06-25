@@ -19,9 +19,12 @@ const Page: React.FC = () => {
 
     // Event handler for when a piece is clicked
     const handlePieceClick = (piece: HTMLElement) => {
-        console.log("Piece clicked:", piece.innerHTML); // Log the clicked piece
+        console.log("Piece clicked:", piece.innerHTML);
+        
         const isWhitePiece = piece.innerHTML.charCodeAt(0) >= 9812 && piece.innerHTML.charCodeAt(0) <= 9817; // Determine if the piece is white
         if ((isWhiteTurn && !isWhitePiece) || (!isWhiteTurn && isWhitePiece)) {
+            console.log("Piece Deleted");
+            
             return; // Prevent selecting pieces out of turn
         }
         if (selectedPiece) {
@@ -33,13 +36,20 @@ const Page: React.FC = () => {
 
     // Validation function for pawn moves
     const isValidPawnMove = (startId: number, endId: number, isWhitePiece: boolean, isCapture: boolean) => {
-        const direction = isWhitePiece ? -8 : 8; // Direction of movement for pawns (negative for white, positive for black)
-        const initialRow = isWhitePiece ? startId >= 48 : startId <= 15; // Check if pawn is in its initial row
-        const moveDistance = endId - startId; // Distance of the move
+        const direction = isWhitePiece ? -8 : 8;
+        const initialRow = isWhitePiece ? startId >= 48 : startId <= 15;
+        const moveDistance = endId - startId;
+    
         if (isCapture) {
-            return Math.abs(moveDistance) === direction - 1 || Math.abs(moveDistance) === direction + 1; // Valid capture move
+            return Math.abs(moveDistance) === 7 || Math.abs(moveDistance) === 9;
         }
-        return (moveDistance === direction || (moveDistance === 2 * direction && initialRow)); // Valid non-capture move
+    
+        if (moveDistance === direction || (moveDistance === 2 * direction && initialRow)) {
+            return true;
+        } else {
+                  selectedPiece?.classList.add('selected');
+             return false;
+        }
     };
 
     // Validation function for rook moves
@@ -72,64 +82,84 @@ const Page: React.FC = () => {
         const colDiff = Math.abs((startId % 8) - (endId % 8)); // Difference in columns
         return rowDiff <= 1 && colDiff <= 1; // Valid king move within one square in any direction
     };
-
     // Function to determine if a move is valid based on piece type
-    const isValidMove = (startId: number, endId: number, pieceType: number, isWhitePiece: boolean, isCapture: boolean) => {
-        switch (pieceType) {
-            case 9817: // White pawn
-            case 9823: // Black pawn
-                return isValidPawnMove(startId, endId, isWhitePiece, isCapture);
-            case 9814: // White rook
-            case 9820: // Black rook
-                return isValidRookMove(startId, endId);
-            case 9816: // White knight
-            case 9822: // Black knight
-                return isValidKnightMove(startId, endId);
-            case 9815: // White bishop
-            case 9821: // Black bishop
-                return isValidBishopMove(startId, endId);
-            case 9813: // White queen
-            case 9819: // Black queen
-                return isValidQueenMove(startId, endId);
-            case 9812: // White king
-            case 9818: // Black king
-                return isValidKingMove(startId, endId);
-            default:
-                return false;
-        }
-    };
+const isValidMove = (startId: number, endId: number, pieceType: number, isWhitePiece: boolean, isCapture: boolean) => {
+    const capturedPiece = board[endId]; // Piece being captured (if any)
 
-    // Event handler for when a square on the chessboard is clicked
-    const handleSquareClick = (squareId: number) => {
+    switch (pieceType) {
+        case 9817: // White pawn
+        case 9823: // Black pawn
+            return isValidPawnMove(startId, endId, isWhitePiece, isCapture);
+        case 9814: // White rook
+        case 9820: // Black rook
+            return isValidRookMove(startId, endId);
+        case 9816: // White knight
+        case 9822: // Black knight
+            return isValidKnightMove(startId, endId);
+        case 9815: // White bishop
+        case 9821: // Black bishop
+            return isValidBishopMove(startId, endId);
+        case 9813: // White queen
+        case 9819: // Black queen
+            return isValidQueenMove(startId, endId);
+        case 9812: // White king
+        case 9818: // Black king
+            return isValidKingMove(startId, endId);
+        default:
+            return false;
+    }
+};
 
-        console.log("Square clicked:", squareId);
-        const squareContainsPiece = board[squareId - 1] !== ""; // Check if the square contains a piece
+// Event handler for when a square on the chessboard is clicked
+const handleSquareClick = (squareId: number) => {
+    console.log("Square clicked:", squareId);
 
-        if (selectedPiece && selectedPiece.parentElement?.id !== squareId.toString()) {
-            const pieceType = selectedPiece.innerHTML.charCodeAt(0); // Get the type of the selected piece
-            const isWhitePiece = pieceType >= 9812 && pieceType <= 9817; // Check if the selected piece is white
-            const startId = parseInt(selectedPiece.parentElement?.id || "0"); // Get the ID of the square where the selected piece is currently located
-            const endId = squareId; // Get the ID of the square where the selected piece is being moved
-            const isCapture = squareContainsPiece; // Check if the move involves capturing another piece
+    const squareContainsPiece = board[squareId - 1] !== ""; // Check if the square contains a piece
+    console.log("Square contains piece:", squareContainsPiece);
 
-            if (isValidMove(startId, endId, pieceType, isWhitePiece, isCapture)) { // Validate the move
+    if (selectedPiece && selectedPiece.parentElement?.id !== squareId.toString()) {
+        const pieceType = selectedPiece.innerHTML.charCodeAt(0); // Get the type of the selected piece
+        const isWhitePiece = pieceType >= 9812 && pieceType <= 9817; // Check if the selected piece is white
+        const startId = parseInt(selectedPiece.parentElement?.id || "0") - 1; // Get the ID of the square where the selected piece is currently located (0-based index)
+        const endId = squareId - 1; // Get the ID of the square where the selected piece is being moved (0-based index)
+        const isCapture = squareContainsPiece && (isWhitePiece !== (board[endId].charCodeAt(0) >= 9812 && board[endId].charCodeAt(0) <= 9817)); // Check if the move involves capturing an opponent's piece
 
-                console.log("Valid move"); 
-                const newBoard = [...board]; // Create a copy of the board
-                newBoard[endId - 1] = newBoard[startId - 1]; // Move the selected piece to the new square
-                newBoard[startId - 1] = ""; // Clear the original square
-                setBoard(newBoard); // Update the board state
+        console.log("Selected piece type:", pieceType);
+        console.log("Is white piece:", isWhitePiece);
+        console.log("Start ID:", startId);
+        console.log("End ID:", endId);
+        console.log("Is capture:", isCapture);
 
-                selectedPiece.classList.remove('selected'); // Remove 'selected' class from the moved piece
-                setSelectedPiece(null); // Clear the selected piece
-                setIsWhiteTurn(!isWhiteTurn); // Toggle turn to the next player
+        if (isValidMove(startId, endId, pieceType, isWhitePiece, isCapture)) { // Validate the move
+            console.log("Valid move");
+            console.log("isCap", isCapture);
+            
+
+            const newBoard = [...board]; // Create a copy of the board
+
+            // Handle move and capture
+            if (isCapture) {
+                newBoard[endId] = selectedPiece.innerHTML; // Move the capturing piece to the new square
+                newBoard[startId] = ""; // Clear the original square
+                
+                console.log(`Piece ${board[endId]} captured by ${newBoard[endId]}`);
             } else {
-
-                console.log("Invalid move"); 
+                newBoard[endId] = selectedPiece.innerHTML; // Move the selected piece to the new square
+                newBoard[startId] = ""; // Clear the original square
             }
-        }
-    };
+            setBoard(newBoard); 
+            //console.log("Board updated", newBoard);
 
+            selectedPiece.classList.remove('selected'); // Remove 'selected' class from the moved piece
+            setSelectedPiece(null); // Clear the selected piece
+            setIsWhiteTurn(!isWhiteTurn); // Toggle turn to the next player
+        } else {
+            console.log("Invalid move");
+        }
+    } else {
+        console.log("No piece selected or same square clicked");
+    }
+};
     // Function to render the chessboard UI
     const renderBoard = () => {
         const squares = [];
