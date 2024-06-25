@@ -56,6 +56,7 @@ const Page: React.FC = () => {
     const isValidRookMove = (startId: number, endId: number) => {
         const sameColumn = startId % 8 === endId % 8; // Check if rook moves in the same column
         const sameRow = Math.floor(startId / 8) === Math.floor(endId / 8); // Check if rook moves in the same row
+        selectedPiece?.classList.add('selected');
         return sameColumn || sameRow; // Valid rook move if either condition is true
     };
 
@@ -63,16 +64,19 @@ const Page: React.FC = () => {
     const isValidKnightMove = (startId: number, endId: number) => {
         const rowDiff = Math.abs(Math.floor(startId / 8) - Math.floor(endId / 8)); // Difference in rows
         const colDiff = Math.abs((startId % 8) - (endId % 8)); // Difference in columns
+        selectedPiece?.classList.add('selected');
         return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2); // Valid knight move
     };
 
     // Validation function for bishop moves
     const isValidBishopMove = (startId: number, endId: number) => {
+        selectedPiece?.classList.add('selected');
         return Math.abs(Math.floor(startId / 8) - Math.floor(endId / 8)) === Math.abs((startId % 8) - (endId % 8)); // Valid bishop move
     };
 
     // Validation function for queen moves
     const isValidQueenMove = (startId: number, endId: number) => {
+        selectedPiece?.classList.add('selected');
         return isValidRookMove(startId, endId) || isValidBishopMove(startId, endId); // Valid queen move (combines rook and bishop moves)
     };
 
@@ -80,6 +84,7 @@ const Page: React.FC = () => {
     const isValidKingMove = (startId: number, endId: number) => {
         const rowDiff = Math.abs(Math.floor(startId / 8) - Math.floor(endId / 8)); // Difference in rows
         const colDiff = Math.abs((startId % 8) - (endId % 8)); // Difference in columns
+        selectedPiece?.classList.add('selected');
         return rowDiff <= 1 && colDiff <= 1; // Valid king move within one square in any direction
     };
     // Function to determine if a move is valid based on piece type
